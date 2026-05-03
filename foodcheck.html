@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="먹어도돼?">
+<meta name="theme-color" content="#fdfaf4">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23fdfaf4'/%3E%3Ctext x='90' y='118' text-anchor='middle' font-size='90'%3E🥗%3C/text%3E%3C/svg%3E">
+<title>먹어도 돼?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gaegu:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #fdfaf4;
+    --bg-soft: #f5efe3;
+    --ink: #2a241e;
+    --ink-soft: #6b5d4f;
+    --line: #e8dfcc;
+    --good: #4a7c59;
+    --good-bg: #e8f0e6;
+    --bad: #b8453a;
+    --bad-bg: #f5e3df;
+    --warn: #c97b3f;
+    --warn-bg: #f8ebd9;
+    --accent: #2a241e;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Gowun Batang', serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(201, 123, 63, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(74, 124, 89, 0.05) 0%, transparent 40%);
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Header */
+  header {
+    padding: 18px 22px 12px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(253, 250, 244, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .brand h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .brand h1 .accent { color: var(--bad); }
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    color: var(--bg);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* Content */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px 22px 100px;
+  }
+
+  .view { display: none; animation: fadeIn 0.3s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Check view */
+  .input-card {
+    background: var(--bg-soft);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .food-input {
+    flex: 1;
+    padding: 14px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .food-input:focus { border-color: var(--ink); }
+  .check-btn {
+    padding: 0 18px;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .check-btn:active { opacity: 0.8; }
+  .check-btn:disabled { opacity: 0.4; }
+
+  .photo-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .photo-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .photo-btn:active {
+    background: var(--bg-soft);
+    transform: scale(0.98);
+  }
+  .photo-btn svg { width: 18px; height: 18px; }
+
+  /* Results */
+  .result {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 12px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result.good { background: var(--good-bg); border-color: var(--good); }
+  .result.bad { background: var(--bad-bg); border-color: var(--bad); }
+  .result.warn { background: var(--warn-bg); border-color: var(--warn); }
+
+  .result-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .result-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .good .result-icon { background: var(--good); color: white; }
+  .bad .result-icon { background: var(--bad); color: white; }
+  .warn .result-icon { background: var(--warn); color: white; }
+  .result-title {
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.3;
+  }
+  .result-verdict {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+  .good .result-verdict { color: var(--good); }
+  .bad .result-verdict { color: var(--bad); }
+  .warn .result-verdict { color: var(--warn); }
+  .result-reason {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .result-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 8px;
+    margin-right: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state .emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+  .empty-state p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Loading */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--line);
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* List view */
+  .list-section {
+    margin-bottom: 22px;
+  }
+  .list-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 4px;
+  }
+  .list-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .list-section-title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .list-section.good .dot { background: var(--good); }
+  .list-section.bad .dot { background: var(--bad); }
+  .list-section-count {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .category-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .category-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .category-name {
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .category-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+  }
+  .icon-btn:active {
+    background: var(--bg-soft);
+    transform: scale(0.92);
+  }
+  .icon-btn svg { width: 14px; height: 14px; }
+  .icon-btn.danger { color: var(--bad); }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .chip {
+    padding: 4px 9px;
+    background: var(--bg-soft);
+    border-radius: 100px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .chip-x {
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-weight: 700;
+    line-height: 1;
+    padding: 0 1px;
+  }
+  .chip-add {
+    padding: 4px 9px;
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .add-category-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .add-category-btn:active { background: var(--bg-soft); }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 36, 30, 0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: var(--bg);
+    border-radius: 22px 22px 0 0;
+    padding: 22px;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal h3 {
+    font-size: 17px;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg-soft);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .modal-input:focus { border-color: var(--ink); }
+  .modal-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .modal-row label {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .modal-row input[type="radio"] { display: none; }
+  .modal-row input[type="radio"]:checked + label {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 13px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+  }
+  .modal-cancel {
+    background: var(--bg-soft);
+    color: var(--ink);
+  }
+  .modal-confirm {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  /* History */
+  .history-item {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .history-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .history-icon.good { background: var(--good); }
+  .history-icon.bad { background: var(--bad); }
+  .history-icon.warn { background: var(--warn); }
+  .history-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .history-name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .history-time {
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+
+  /* Photo preview */
+  .photo-preview {
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: none;
+  }
+  .photo-preview.active { display: block; }
+  .photo-preview img {
+    width: 100%;
+    display: block;
+    max-height: 200px;
+    object-fit: cover;
+  }
+  .photo-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  input[type="file"] { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>먹어도 <span class="accent">돼?</span></h1>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-view="check">체크</button>
+    <button class="tab" data-view="history">기록</button>
+    <button class="tab" data-view="list">내 리스트</button>
+  </div>
+</header>
+
+<main>
+  <!-- Check View -->
+  <section class="view active" id="view-check">
+    <div class="input-card">
+      <div class="input-row">
+        <input type="text" class="food-input" id="foodInput" placeholder="음식 이름 입력... (예: 김치찌개)" />
+        <button class="check-btn" id="checkBtn">체크</button>
+      </div>
+      <div class="photo-row">
+        <button class="photo-btn" id="cameraBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          사진 촬영
+        </button>
+        <button class="photo-btn" id="galleryBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          갤러리
+        </button>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
+        <input type="file" id="galleryInput" accept="image/*">
+      </div>
+      <div class="photo-preview" id="photoPreview">
+        <img id="previewImg" alt="preview">
+        <button class="photo-remove" id="photoRemove">✕</button>
+      </div>
+    </div>
+
+    <div id="resultsArea">
+      <div class="empty-state">
+        <div class="emoji">🥗</div>
+        <p>음식 이름을 입력하거나<br>사진을 찍어서 체크해보세요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- History View -->
+  <section class="view" id="view-history">
+    <div id="historyArea">
+      <div class="empty-state">
+        <div class="emoji">📋</div>
+        <p>아직 기록이 없어요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- List View -->
+  <section class="view" id="view-list">
+    <div class="list-section good">
+      <div class="list-section-head">
+        <div class="list-section-title"><span class="dot"></span>먹어도 좋은 음식</div>
+        <div class="list-section-count" id="goodCount"></div>
+      </div>
+      <div id="goodCategories"></div>
+      <button class="add-category-btn" data-type="good">+ 카테고리 추가</button>
+    </div>
+
+    <div class="list-section bad">
+      <div class="list-section-head">
+        <div class="list-section-title"><span class="dot"></span>피해야 할 음식</div>
+        <div class="list-section-count" id="badCount"></div>
+      </div>
+      <div id="badCategories"></div>
+      <button class="add-category-btn" data-type="bad">+ 카테고리 추가</button>
+    </div>
+  </section>
+</main>
+
+<!-- Modals -->
+<div class="modal-bg" id="addCategoryModal">
+  <div class="modal">
+    <h3>새 카테고리 추가</h3>
+    <input type="text" class="modal-input" id="newCategoryName" placeholder="카테고리 이름 (예: 비타민)">
+    <div class="modal-actions">
+      <button class="modal-cancel" data-close>취소</button>
+      <button class="modal-confirm" id="confirmAddCategory">추가</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="addItemModal">
+  <div class="modal">
+    <h3 id="addItemTitle">음식 추가</h3>
+    <input type="text" class="modal-input" id="newItemName" placeholder="음식 이름">
+    <div class="modal-actions">
+      <button class="modal-cancel" data-close>취소</button>
+      <button class="modal-confirm" id="confirmAddItem">추가</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Initial Data =====
+const DEFAULT_DATA = {
+  good: {
+    "라이신": ["연어", "고등어", "전갱이", "넙치", "대구", "정수기", "소고기 살코기", "닭가슴살", "칠면조", "달걀", "무설탕 요거트", "코티지 치즈", "우유", "굴", "조개류", "게", "새우", "파르메산 치즈", "리코타 치즈", "가자미", "도미", "참치", "돼지고기 안심", "양고기 살코기", "메추리알", "사골 국물", "농어", "전복", "멍게", "해삼", "관자", "정어리", "도루묵", "멸치", "전어", "장어", "복어"],
+    "항염": ["브로콜리", "콜리플라워", "양배추", "케일", "시금치", "청경채", "파프리카", "아스파라거스", "토마토", "비트", "마늘", "양파", "블루베리", "딸기", "라즈베리", "사과", "배", "키위", "파파야", "아보카도", "강황", "생강", "녹차", "엑스트라 버진 올리브유", "아마씨유", "무", "당근", "미역", "다시마", "톳", "들기름", "노니", "셀러리", "오이", "상추", "깻잎", "고수", "파슬리", "레몬", "자몽"]
+  },
+  bad: {
+    "아르기닌": ["초콜릿", "코코아 가루", "땅콩", "아몬드", "호두", "캐슈넛", "해바라기씨", "호박씨", "참깨", "젤라틴", "오트밀", "통밀가루", "현미", "대두", "두부", "렌틸콩", "병아리콩", "스피루리나", "단백질 보충제", "잣", "피스타치오", "피칸", "마카다미아", "검은콩", "완두콩", "비지", "청국장", "메밀", "수수", "율무", "밤", "은행", "코코넛 밀크", "김", "붉은 팥", "녹두", "옥수수 씨눈"],
+    "염증": ["설탕", "액상과당", "탄산음료", "에너지 드링크", "도넛", "케이크", "쿠키", "흰 빵", "라면", "소시지", "베이컨", "햄", "팝콘", "감자튀김", "치킨 튀김옷", "마가린", "정제유", "알코올", "인공 감미료", "맵고 짠 소스", "기름진 삼겹살", "편의점 도시락", "즉석 식품", "냉동 피자", "아이스크림", "탕후루", "자장면", "짬뽕", "떡볶이", "튀김류", "가공 치즈", "통조림"]
+  }
+};
+
+// ===== State =====
+let data = loadData();
+let history = loadHistory();
+let currentImage = null;
+let modalContext = {};
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('foodcheck_data');
+    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  } catch (e) {
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+}
+function saveData() {
+  try { localStorage.setItem('foodcheck_data', JSON.stringify(data)); } catch (e) {}
+}
+function loadHistory() {
+  try {
+    const saved = localStorage.getItem('foodcheck_history');
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) { return []; }
+}
+function saveHistory() {
+  try { localStorage.setItem('foodcheck_history', JSON.stringify(history.slice(0, 50))); } catch (e) {}
+}
+
+// ===== Tabs =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('view-' + tab.dataset.view).classList.add('active');
+    if (tab.dataset.view === 'list') renderList();
+    if (tab.dataset.view === 'history') renderHistory();
+  });
+});
+
+// ===== Toast =====
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ===== Photo handling =====
+document.getElementById('cameraBtn').addEventListener('click', () => {
+  document.getElementById('cameraInput').click();
+});
+document.getElementById('galleryBtn').addEventListener('click', () => {
+  document.getElementById('galleryInput').click();
+});
+document.getElementById('cameraInput').addEventListener('change', handlePhoto);
+document.getElementById('galleryInput').addEventListener('change', handlePhoto);
+document.getElementById('photoRemove').addEventListener('click', () => {
+  currentImage = null;
+  document.getElementById('photoPreview').classList.remove('active');
+  document.getElementById('cameraInput').value = '';
+  document.getElementById('galleryInput').value = '';
+});
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    // resize image to keep API payload small
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxDim = 1024;
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = h * maxDim / w; w = maxDim; }
+        else { w = w * maxDim / h; h = maxDim; }
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      currentImage = dataUrl.split(',')[1]; // base64
+      document.getElementById('previewImg').src = dataUrl;
+      document.getElementById('photoPreview').classList.add('active');
+      // auto trigger check
+      checkFood({ usePhoto: true });
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ===== Check button =====
+document.getElementById('checkBtn').addEventListener('click', () => checkFood({ usePhoto: false }));
+document.getElementById('foodInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') checkFood({ usePhoto: false });
+});
+
+async function checkFood({ usePhoto }) {
+  const text = document.getElementById('foodInput').value.trim();
+  if (!usePhoto && !text) {
+    toast('음식 이름을 입력하세요');
+    return;
+  }
+
+  const resultsArea = document.getElementById('resultsArea');
+  resultsArea.innerHTML = '<div class="loading"><div class="spinner"></div>분석 중...</div>';
+
+  try {
+    const items = await analyzeFood({ text, image: usePhoto ? currentImage : null });
+    renderResults(items);
+    items.forEach(it => {
+      history.unshift({ ...it, time: Date.now() });
+    });
+    saveHistory();
+  } catch (err) {
+    resultsArea.innerHTML = `
+      <div class="result bad">
+        <div class="result-head">
+          <div class="result-icon">!</div>
+          <div>
+            <div class="result-title">분석 오류</div>
+            <div class="result-verdict">ERROR</div>
+          </div>
+        </div>
+        <div class="result-reason">${err.message || '분석 중 문제가 발생했어요. 다시 시도해주세요.'}</div>
+      </div>`;
+  }
+}
+
+// ===== AI analysis =====
+async function analyzeFood({ text, image }) {
+  // Build the food list context
+  const goodList = Object.entries(data.good).map(([cat, items]) =>
+    `[${cat}] ${items.join(', ')}`).join('\n');
+  const badList = Object.entries(data.bad).map(([cat, items]) =>
+    `[${cat}] ${items.join(', ')}`).join('\n');
+
+  const systemPrompt = `당신은 사용자의 식단 가이드 도우미입니다. 사용자는 자신만의 '먹어도 좋은 음식'과 '피해야 할 음식' 리스트를 가지고 있습니다.
+
+【먹어도 좋은 음식】
+${goodList}
+
+【피해야 할 음식】
+${badList}
+
+사용자가 음식 이름이나 음식/메뉴 사진을 주면, 다음을 판단하세요:
+1. 메뉴판 사진이면 거기서 음식들을 추출하고, 음식 사진이면 보이는 음식들을 식별
+2. 각 음식이 위 리스트의 어느 항목에 해당하는지 판단 (재료까지 추론)
+3. 리스트에 직접 없어도 일반적인 한국 음식 지식으로 추론 (예: "김치찌개"는 돼지고기, 김치, 두부 등이 들어가므로 두부(아르기닌) 때문에 피해야 함)
+
+응답은 반드시 다음 JSON 형식으로만 답하세요. 다른 텍스트나 마크다운 코드블록 없이 순수 JSON만:
+{
+  "items": [
+    {
+      "name": "음식 이름",
+      "verdict": "good" | "bad" | "warn",
+      "matchedCategory": "라이신" | "항염" | "아르기닌" | "염증" | null,
+      "matchedItem": "리스트의 항목 이름 또는 null",
+      "reason": "간결한 한국어 설명 (왜 좋은/나쁜지, 어떤 재료 때문인지). 2-3문장."
+    }
+  ]
+}
+
+verdict 규칙:
+- good: 먹어도 좋은 리스트에 명확히 해당
+- bad: 피해야 할 리스트에 명확히 해당 (재료에 포함된 경우도)
+- warn: 좋은 재료/나쁜 재료가 섞여 있거나 애매한 경우, 또는 일반적으로 건강에 안 좋은 음식이지만 리스트에는 없는 경우`;
+
+  const userContent = [];
+  if (image) {
+    userContent.push({
+      type: 'image',
+      source: { type: 'base64', media_type: 'image/jpeg', data: image }
+    });
+  }
+  userContent.push({
+    type: 'text',
+    text: text ? `이 음식을 분석해주세요: ${text}` : '이 사진의 음식/메뉴를 분석해주세요.'
+  });
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('네트워크 오류');
+  }
+
+  const result = await response.json();
+  let txt = result.content.map(c => c.text || '').join('').trim();
+  txt = txt.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(txt);
+  } catch (e) {
+    // try to extract JSON
+    const m = txt.match(/\{[\s\S]*\}/);
+    if (m) parsed = JSON.parse(m[0]);
+    else throw new Error('응답을 이해할 수 없어요');
+  }
+  return parsed.items || [];
+}
+
+// ===== Render results =====
+function renderResults(items) {
+  const area = document.getElementById('resultsArea');
+  if (!items.length) {
+    area.innerHTML = '<div class="empty-state"><div class="emoji">🤔</div><p>음식을 인식하지 못했어요</p></div>';
+    return;
+  }
+
+  area.innerHTML = items.map(item => {
+    const verdictText = item.verdict === 'good' ? '먹어도 좋아요'
+      : item.verdict === 'bad' ? '피하는 게 좋아요'
+      : '주의가 필요해요';
+    const icon = item.verdict === 'good' ? '✓' : item.verdict === 'bad' ? '✕' : '!';
+    return `
+      <div class="result ${item.verdict}">
+        <div class="result-head">
+          <div class="result-icon">${icon}</div>
+          <div>
+            <div class="result-title">${escapeHtml(item.name)}</div>
+            <div class="result-verdict">${verdictText}</div>
+          </div>
+        </div>
+        ${item.matchedCategory ? `<span class="result-tag">${escapeHtml(item.matchedCategory)}${item.matchedItem ? ' · ' + escapeHtml(item.matchedItem) : ''}</span>` : ''}
+        <div class="result-reason">${escapeHtml(item.reason)}</div>
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ===== History =====
+function renderHistory() {
+  const area = document.getElementById('historyArea');
+  if (!history.length) {
+    area.innerHTML = '<div class="empty-state"><div class="emoji">📋</div><p>아직 기록이 없어요</p></div>';
+    return;
+  }
+  area.innerHTML = history.map(h => {
+    const icon = h.verdict === 'good' ? '✓' : h.verdict === 'bad' ? '✕' : '!';
+    return `
+      <div class="history-item">
+        <div class="history-icon ${h.verdict}">${icon}</div>
+        <div class="history-content">
+          <div class="history-name">${escapeHtml(h.name)}</div>
+          <div class="history-time">${formatTime(h.time)}${h.matchedCategory ? ' · ' + escapeHtml(h.matchedCategory) : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function formatTime(t) {
+  const d = new Date(t);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '방금';
+  if (diff < 3600000) return Math.floor(diff/60000) + '분 전';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '시간 전';
+  return d.getMonth()+1 + '월 ' + d.getDate() + '일';
+}
+
+// ===== List management =====
+function renderList() {
+  let goodTotal = 0, badTotal = 0;
+  Object.values(data.good).forEach(arr => goodTotal += arr.length);
+  Object.values(data.bad).forEach(arr => badTotal += arr.length);
+  document.getElementById('goodCount').textContent = `${Object.keys(data.good).length}개 카테고리 · ${goodTotal}개`;
+  document.getElementById('badCount').textContent = `${Object.keys(data.bad).length}개 카테고리 · ${badTotal}개`;
+
+  document.getElementById('goodCategories').innerHTML = renderCategories('good');
+  document.getElementById('badCategories').innerHTML = renderCategories('bad');
+
+  // attach handlers
+  document.querySelectorAll('[data-cat-delete]').forEach(b => {
+    b.addEventListener('click', e => {
+      const t = e.currentTarget.dataset.type;
+      const c = e.currentTarget.dataset.catDelete;
+      if (confirm(`'${c}' 카테고리를 삭제할까요?`)) {
+        delete data[t][c];
+        saveData();
+        renderList();
+      }
+    });
+  });
+  document.querySelectorAll('[data-chip-delete]').forEach(b => {
+    b.addEventListener('click', e => {
+      const t = e.currentTarget.dataset.type;
+      const c = e.currentTarget.dataset.cat;
+      const item = e.currentTarget.dataset.chipDelete;
+      data[t][c] = data[t][c].filter(x => x !== item);
+      saveData();
+      renderList();
+    });
+  });
+  document.querySelectorAll('[data-chip-add]').forEach(b => {
+    b.addEventListener('click', e => {
+      modalContext = {
+        type: 'item',
+        listType: e.currentTarget.dataset.type,
+        category: e.currentTarget.dataset.chipAdd
+      };
+      document.getElementById('addItemTitle').textContent = `'${modalContext.category}'에 음식 추가`;
+      document.getElementById('newItemName').value = '';
+      document.getElementById('addItemModal').classList.add('active');
+      setTimeout(() => document.getElementById('newItemName').focus(), 100);
+    });
+  });
+}
+
+function renderCategories(type) {
+  return Object.entries(data[type]).map(([cat, items]) => `
+    <div class="category-card">
+      <div class="category-head">
+        <div class="category-name">${escapeHtml(cat)} <span style="font-size:11px;color:var(--ink-soft);font-weight:400">(${items.length})</span></div>
+        <div class="category-actions">
+          <button class="icon-btn danger" data-type="${type}" data-cat-delete="${escapeHtml(cat)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="chips">
+        ${items.map(it => `
+          <span class="chip">${escapeHtml(it)}<span class="chip-x" data-type="${type}" data-cat="${escapeHtml(cat)}" data-chip-delete="${escapeHtml(it)}">✕</span></span>
+        `).join('')}
+        <button class="chip-add" data-type="${type}" data-chip-add="${escapeHtml(cat)}">+ 추가</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.querySelectorAll('.add-category-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    modalContext = { type: 'category', listType: b.dataset.type };
+    document.getElementById('newCategoryName').value = '';
+    document.getElementById('addCategoryModal').classList.add('active');
+    setTimeout(() => document.getElementById('newCategoryName').focus(), 100);
+  });
+});
+
+document.getElementById('confirmAddCategory').addEventListener('click', () => {
+  const name = document.getElementById('newCategoryName').value.trim();
+  if (!name) return;
+  if (data[modalContext.listType][name]) {
+    toast('이미 있는 카테고리예요');
+    return;
+  }
+  data[modalContext.listType][name] = [];
+  saveData();
+  document.getElementById('addCategoryModal').classList.remove('active');
+  renderList();
+});
+
+document.getElementById('confirmAddItem').addEventListener('click', () => {
+  const name = document.getElementById('newItemName').value.trim();
+  if (!name) return;
+  const list = data[modalContext.listType][modalContext.category];
+  if (list.includes(name)) {
+    toast('이미 있는 음식이에요');
+    return;
+  }
+  list.push(name);
+  saveData();
+  document.getElementById('addItemModal').classList.remove('active');
+  renderList();
+});
+
+document.querySelectorAll('[data-close]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('active'));
+  });
+});
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => {
+    if (e.target === m) m.classList.remove('active');
+  });
+});
+
+// Allow Enter in modal inputs
+document.getElementById('newCategoryName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('confirmAddCategory').click();
+});
+document.getElementById('newItemName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('confirmAddItem').click();
+});
+
+// initial render of lists
+renderList();
+</script>
+
+</body>
+</html>
